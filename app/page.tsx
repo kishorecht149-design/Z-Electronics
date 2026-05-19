@@ -74,7 +74,7 @@ export default function HomePage() {
               No products found in the catalog.
             </div>
           ) : (
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-3 sm:gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
               {products.slice(0, 4).map((product: any) => (
                 <ProductCard key={product._id} product={product} />
               ))}
