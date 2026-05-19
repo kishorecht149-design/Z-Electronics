@@ -6,6 +6,7 @@ import { verifyToken } from "../utils/jwt";
 export interface AuthenticatedRequest extends Request {
   user?: {
     userId: string;
+    _id: string;
     role: "customer" | "staff" | "admin";
   };
 }
@@ -19,9 +20,15 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
   }
 
   try {
-    req.user = verifyToken(token) as AuthenticatedRequest["user"];
+    const decoded = verifyToken(token);
+    req.user = {
+      userId: decoded.userId || decoded._id,
+      _id: decoded.userId || decoded._id,
+      role: decoded.role
+    };
     next();
-  } catch {
+  } catch (err: any) {
+    console.error("JWT Verification failed:", err.message);
     return res.status(401).json(failure("Invalid or expired token"));
   }
 }
