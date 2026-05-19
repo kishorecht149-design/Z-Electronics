@@ -8,6 +8,11 @@ import { errorHandler } from "./middlewares/error-handler";
 import { apiRouter } from "./routes";
 
 const app = express();
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 150,
+  skip: (req) => req.path === "/api/health" || req.path === "/health"
+});
 
 app.use(
   cors({
@@ -16,12 +21,14 @@ app.use(
   })
 );
 app.use(express.json({ limit: "1mb" }));
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 150
+app.get("/health", (_req, res) =>
+  res.json({
+    success: true,
+    app: "z-electronics-api",
+    timestamp: new Date().toISOString()
   })
 );
+app.use(apiLimiter);
 
 app.use("/api", apiRouter);
 app.use(errorHandler);

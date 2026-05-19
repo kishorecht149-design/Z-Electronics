@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Loader2, Trash2 } from "lucide-react";
+import { Plus, Loader2, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -199,6 +199,15 @@ export default function AdminProductsPage() {
                         </td>
                         <td className="py-4">
                           <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                            >
+                              <Link href={`/admin/products/${product._id}` as Route} className="inline-flex items-center">
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit
+                              </Link>
+                            </Button>
                             <Button
                               size="sm"
                               variant="outline"
