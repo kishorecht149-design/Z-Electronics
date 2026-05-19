@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "dev:server": "tsx watch server/src/index.ts",
+    "start:server": "tsx server/src/index.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "seed": "tsx server/src/seed/run.ts"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",

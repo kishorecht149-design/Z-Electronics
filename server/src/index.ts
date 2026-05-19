@@ -9,7 +9,12 @@ import { apiRouter } from "./routes";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN === "*" ? true : env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
+    credentials: true
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(
   rateLimit({
@@ -24,8 +29,8 @@ app.use(errorHandler);
 async function bootstrap() {
   await connectDatabase();
   const port = Number(env.PORT ?? 8080);
-  app.listen(port, () => {
-    console.log(`Z Electronics API running on http://localhost:${port}`);
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Z Electronics API running on port ${port}`);
   });
 }
 

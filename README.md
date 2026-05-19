@@ -51,6 +51,45 @@ npm run dev:server
 npm run seed
 ```
 
+## Deploy
+
+### Frontend on Vercel
+
+- Import this GitHub repository into Vercel
+- Framework preset: `Next.js`
+- Root directory: repository root
+- Build command: `npm run build`
+- Output setting: leave default for Next.js
+- Production branch: `main`
+
+Set these Vercel environment variables:
+
+- `NEXT_PUBLIC_APP_URL=https://your-frontend-domain.vercel.app`
+- `NEXT_PUBLIC_API_URL=https://your-render-service.onrender.com/api`
+- `NEXT_PUBLIC_RAZORPAY_KEY_ID=...`
+- `NEXT_PUBLIC_WHATSAPP_NUMBER=...`
+
+### Backend on Render
+
+- Create a new Render Web Service from this same repository
+- Render can use [render.yaml](/Users/kishore/Documents/Z electronics/render.yaml), or configure manually
+- Build command: `npm install`
+- Start command: `npm run start:server`
+- Health check path: `/api/health`
+
+Set these Render environment variables:
+
+- `MONGODB_URI=...`
+- `JWT_SECRET=...`
+- `JWT_EXPIRES_IN=7d`
+- `CORS_ORIGIN=https://your-frontend-domain.vercel.app`
+- `STRIPE_SECRET_KEY=...`
+- `STRIPE_WEBHOOK_SECRET=...`
+- `RAZORPAY_KEY_ID=...`
+- `RAZORPAY_KEY_SECRET=...`
+- `ADMIN_BOOTSTRAP_EMAIL=...`
+- `ADMIN_BOOTSTRAP_PASSWORD=...`
+
 ## Production Notes
 
 - Frontend deploy target: Vercel

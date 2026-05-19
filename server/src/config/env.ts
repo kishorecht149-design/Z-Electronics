@@ -6,6 +6,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().min(1),
   JWT_SECRET: z.string().min(10),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  CORS_ORIGIN: z.string().default("*"),
   PORT: z.string().optional()
 });
 
