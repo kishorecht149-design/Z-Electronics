@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, UploadCloud, Save, ArrowLeft } from "lucide-react";
+import { Loader2, UploadCloud, Save, ArrowLeft, Link2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,7 +35,7 @@ export default function NewProductPage() {
   });
 
   const [isUploading, setIsUploading] = useState(false);
-  const [cloudinaryUrl, setCloudinaryUrl] = useState("");
+  const [imageUrlInput, setImageUrlInput] = useState("");
 
   const { data: categoriesRes } = useQuery({
     queryKey: ["admin-categories"],
@@ -84,7 +84,7 @@ export default function NewProductPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.price || !formData.shortDescription || !formData.description || !formData.category || !formData.brand || formData.images.length === 0) {
-      toast.error("Please fill all required fields and upload at least one image");
+      toast.error("Please fill all required fields and add at least one image link");
       return;
     }
 
@@ -99,6 +99,37 @@ export default function NewProductPage() {
         .map((tag) => tag.trim())
         .filter(Boolean)
     });
+  };
+
+  const handleAddImageUrl = () => {
+    const normalizedUrl = imageUrlInput.trim();
+
+    if (!normalizedUrl) {
+      toast.error("Please enter an image URL");
+      return;
+    }
+
+    try {
+      const parsed = new URL(normalizedUrl);
+      if (!["http:", "https:"].includes(parsed.protocol)) {
+        toast.error("Use a valid http or https image URL");
+        return;
+      }
+
+      if (formData.images.includes(normalizedUrl)) {
+        toast.error("This image URL is already added");
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, normalizedUrl]
+      }));
+      setImageUrlInput("");
+      toast.success("Image link added");
+    } catch {
+      toast.error("Please enter a valid image URL");
+    }
   };
 
   return (
@@ -203,46 +234,63 @@ export default function NewProductPage() {
 
             <GlassCard className="p-6">
               <h2 className="text-lg font-semibold text-white mb-6">Product Images</h2>
-              <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="mb-4 rounded-2xl border border-violet-500/20 bg-violet-500/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-xl bg-violet-500/10 p-2 text-violet-300">
+                    <Link2 className="h-4 w-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-white">Recommended: use online image links</p>
+                    <p className="text-xs leading-6 text-white/55">
+                      Paste any direct image URL from a CDN, product page, Unsplash, Cloudinary, or your own hosted image.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Image URL *</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://example.com/product-image.jpg"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                  />
+                  <Button type="button" onClick={handleAddImageUrl}>
+                    Add Image
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-4 md:grid-cols-4">
                 {formData.images.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/40">
                     <Image src={img} alt={`Upload ${i+1}`} fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.filter((_, index) => index !== i)
+                        }))
+                      }
+                      className="absolute right-2 top-2 rounded-full bg-black/70 p-1.5 text-white/80 transition hover:text-pink"
+                      aria-label="Remove image"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 ))}
-                <label className={`relative aspect-square rounded-xl border-2 border-dashed border-white/20 bg-white/5 flex flex-col items-center justify-center cursor-pointer hover:border-violet-500/50 hover:bg-violet-500/5 transition-all ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                  {isUploading ? <Loader2 className="h-6 w-6 text-violet-400 animate-spin" /> : <UploadCloud className="h-6 w-6 text-white/50 mb-2" />}
-                  <span className="text-xs text-white/50">{isUploading ? 'Uploading...' : 'Upload Image'}</span>
-                </label>
               </div>
 
               <div className="border-t border-white/5 pt-4 mt-4">
-                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Or Paste Cloudinary / External Image URL</label>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="https://res.cloudinary.com/..." 
-                    value={cloudinaryUrl}
-                    onChange={(e) => setCloudinaryUrl(e.target.value)}
-                  />
-                  <Button 
-                    type="button" 
-                    variant="secondary"
-                    onClick={() => {
-                      if (cloudinaryUrl.trim()) {
-                        setFormData(prev => ({
-                          ...prev,
-                          images: [...prev.images, cloudinaryUrl.trim()]
-                        }));
-                        setCloudinaryUrl("");
-                        toast.success("Image link added!");
-                      } else {
-                        toast.error("Please enter a valid image URL");
-                      }
-                    }}
-                  >
-                    Add URL
-                  </Button>
-                </div>
+                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Optional: Upload from device</label>
+                <label className={`relative min-h-28 rounded-xl border-2 border-dashed border-white/20 bg-white/5 flex flex-col items-center justify-center cursor-pointer hover:border-violet-500/50 hover:bg-violet-500/5 transition-all ${isUploading ? "opacity-50 pointer-events-none" : ""}`}>
+                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                  {isUploading ? <Loader2 className="h-6 w-6 text-violet-400 animate-spin" /> : <UploadCloud className="h-6 w-6 text-white/50 mb-2" />}
+                  <span className="text-xs text-white/50">{isUploading ? "Uploading..." : "Upload Image"}</span>
+                  <span className="mt-1 text-[11px] text-white/35">Requires Cloudinary env vars on Render</span>
+                </label>
               </div>
             </GlassCard>
           </div>
