@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { adminRouter } from "./admin.routes";
 import { authRouter } from "./auth.routes";
+import { catalogRouter } from "./catalog.routes";
 import { orderRouter } from "./order.routes";
 import { productRouter } from "./product.routes";
 import { userRouter } from "./user.routes";
@@ -9,6 +10,7 @@ import { userRouter } from "./user.routes";
 export const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
+apiRouter.use("/catalog", catalogRouter);
 apiRouter.use("/products", productRouter);
 apiRouter.use("/orders", orderRouter);
 apiRouter.use("/users", userRouter);

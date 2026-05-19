@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, BookOpen, GraduationCap, ShieldCheck, Star, Users, Video, Wrench, Zap, Component, Cpu, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -8,10 +9,16 @@ import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { catalogService } from "@/services/catalog.service";
 import { useProducts } from "@/hooks/use-products";
 
 export default function HomePage() {
   const { data: products, isLoading } = useProducts({ limit: 4 });
+  const { data: categoriesRes } = useQuery({
+    queryKey: ["home-categories"],
+    queryFn: () => catalogService.getCategories()
+  });
+  const categories = (categoriesRes?.data ?? []).slice(0, 8);
 
   return (
     <div>
@@ -28,28 +35,23 @@ export default function HomePage() {
           />
         </div>
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { name: "Arduino Ecosystem", icon: Cpu, sub: "Explore Catalog" },
-            { name: "Raspberry Pi", icon: Component, sub: "Explore Catalog" },
-            { name: "Sensors & Modules", icon: Zap, sub: "Explore Catalog" },
-            { name: "Robotics Modules", icon: Wrench, sub: "Explore Catalog" },
-            { name: "IoT Devices", icon: Zap, sub: "Explore Catalog" },
-            { name: "Power Management", icon: Zap, sub: "Explore Catalog" },
-            { name: "Tools & Testing", icon: Wrench, sub: "Explore Catalog" },
-            { name: "Starter Kits", icon: BookOpen, sub: "Explore Catalog" }
-          ].map((cat) => (
-            <Link key={cat.name} href="/categories">
+          {categories.length ? categories.map((cat: any) => (
+            <Link key={cat.name} href={`/shop?category=${cat._id}`}>
               <GlassCard className="group flex items-center gap-4 transition-all hover:bg-white/10 hover:border-violet-500/30">
                 <div className="rounded-xl bg-white/5 p-3 text-violet-300 group-hover:bg-violet-500/20 group-hover:text-violet-200 transition-colors">
-                  <cat.icon className="h-6 w-6" />
+                  <Cpu className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">{cat.name}</h3>
-                  <p className="text-xs text-white/50">{cat.sub}</p>
+                  <p className="text-xs text-white/50">{cat.productCount ?? 0} live products</p>
                 </div>
               </GlassCard>
             </Link>
-          ))}
+          )) : (
+            <GlassCard className="sm:col-span-2 lg:col-span-4">
+              <p className="text-sm text-white/55">No live categories yet. Create categories from the admin workspace to populate this section.</p>
+            </GlassCard>
+          )}
         </div>
       </section>
 

@@ -20,7 +20,7 @@ export default function TrackingPage() {
 
   const { data: res, isLoading } = useQuery({
     queryKey: ["track", trackingId],
-    queryFn: () => orderService.getOrder(trackingId),
+    queryFn: () => orderService.trackOrder(trackingId),
     enabled: isAuthenticated,
     retry: false
   });

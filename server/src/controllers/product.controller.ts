@@ -7,13 +7,23 @@ import { success, failure } from "../utils/api-response";
 
 export async function listProducts(req: ParsedQueryRequest, res: Response) {
   const { filter = {}, sort = { createdAt: -1 }, skip = 0, limit = 10, page = 1 } = req.parsedQuery || {};
-  const { q } = req.query;
+  const { q, minPrice, maxPrice } = req.query;
 
   // Add active status requirement by default for public endpoint
   const finalFilter: Record<string, any> = { ...filter, status: "published" };
 
+  if (req.query.stock === "true") {
+    finalFilter.stock = { $gt: 0 };
+  }
+
   if (q) {
     finalFilter.name = { $regex: q as string, $options: "i" };
+  }
+
+  if (minPrice || maxPrice) {
+    finalFilter.price = {};
+    if (minPrice) finalFilter.price.$gte = Number(minPrice);
+    if (maxPrice) finalFilter.price.$lte = Number(maxPrice);
   }
 
   const [products, total] = await Promise.all([

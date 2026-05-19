@@ -9,6 +9,8 @@ import {
   getAdminDashboard,
   listAdminOrders,
   listAdminProducts,
+  listAdminUsers,
+  listBrands,
   listCategories,
   listCoupons,
   updateOrderStatus,
@@ -24,6 +26,7 @@ export const adminRouter = Router();
 adminRouter.use(requireAuth, requireAdmin);
 adminRouter.get("/dashboard", getAdminDashboard);
 adminRouter.post("/upload", upload.single("image"), uploadImageAdmin);
+adminRouter.get("/brands", parseQuery, listBrands);
 adminRouter.post("/brands", createBrand);
 adminRouter.get("/products", parseQuery, listAdminProducts);
 adminRouter.post("/products", createProduct);
@@ -35,3 +38,4 @@ adminRouter.get("/coupons", parseQuery, listCoupons);
 adminRouter.post("/coupons", createCoupon);
 adminRouter.get("/orders", parseQuery, listAdminOrders);
 adminRouter.patch("/orders/:id/status", updateOrderStatus);
+adminRouter.get("/users", parseQuery, listAdminUsers);

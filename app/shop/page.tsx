@@ -1,23 +1,57 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, Filter, Search, SlidersHorizontal, Star, Loader2 } from "lucide-react";
+import { ChevronRight, Filter, Search, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
+import { catalogService } from "@/services/catalog.service";
 import { productsService } from "@/services/products.service";
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") ?? "");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [sort, setSort] = useState("-createdAt");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [page, setPage] = useState(1);
+
+  const { data: categoriesRes } = useQuery({
+    queryKey: ["shop-categories"],
+    queryFn: () => catalogService.getCategories()
+  });
+
+  const { data: brandsRes } = useQuery({
+    queryKey: ["shop-brands"],
+    queryFn: () => catalogService.getBrands()
+  });
 
   const { data: response, isLoading } = useQuery({
-    queryKey: ["products", { q: searchQuery }],
-    queryFn: () => productsService.getProducts({ q: searchQuery })
+    queryKey: ["products", { q: searchQuery, category: selectedCategory, brand: selectedBrand, sort, inStockOnly, minPrice, maxPrice, page }],
+    queryFn: () =>
+      productsService.getProducts({
+        q: searchQuery || undefined,
+        category: selectedCategory || undefined,
+        brand: selectedBrand || undefined,
+        sort,
+        page,
+        limit: 12,
+        minPrice: minPrice || undefined,
+        maxPrice: maxPrice || undefined,
+        ...(inStockOnly ? { stock: "true" } : {})
+      })
   });
 
   const products = response?.data || [];
+  const meta = response?.meta;
+  const categories = categoriesRes?.data || [];
+  const brands = brandsRes?.data || [];
 
   return (
     <div className="page-shell py-8">
@@ -48,51 +82,79 @@ export default function ShopPage() {
               <h2 className="font-semibold text-white">Filters</h2>
             </div>
 
-            <FilterBlock 
-              title="Categories" 
-              values={["Microcontrollers", "Raspberry Pi", "Sensors", "Displays", "Power Management", "Motors & Actuators", "Wireless & IoT", "Passive Components"]} 
+            <DynamicFilterBlock
+              title="Categories"
+              values={categories.map((category: any) => ({
+                id: category._id,
+                label: category.name
+              }))}
+              selected={selectedCategory}
+              onSelect={(value) => {
+                setPage(1);
+                setSelectedCategory(value);
+              }}
             />
             
-            <FilterBlock 
-              title="Brands" 
-              values={["Arduino", "Raspberry Pi", "Adafruit", "SparkFun", "Espressif", "Texas Instruments"]} 
+            <DynamicFilterBlock
+              title="Brands"
+              values={brands.map((brand: any) => ({
+                id: brand._id,
+                label: brand.name
+              }))}
+              selected={selectedBrand}
+              onSelect={(value) => {
+                setPage(1);
+                setSelectedBrand(value);
+              }}
             />
             
-            <FilterBlock 
-              title="Stock Status" 
-              values={["In Stock Only", "Include Out of Stock", "Available for Backorder"]} 
-            />
+            <div>
+              <p className="mb-3 text-sm font-medium text-white">Stock Status</p>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={inStockOnly}
+                  onChange={(e) => {
+                    setPage(1);
+                    setInStockOnly(e.target.checked);
+                  }}
+                  className="h-4 w-4 rounded border-white/20 bg-white/5 accent-violet-500"
+                />
+                <span className="text-sm text-white/65 group-hover:text-white transition-colors">In Stock Only</span>
+              </label>
+            </div>
             
             <div>
               <p className="mb-4 text-sm font-medium text-white">Price Range</p>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">₹</span>
-                  <input type="number" placeholder="Min" className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none" />
+                  <input
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => {
+                      setPage(1);
+                      setMinPrice(e.target.value);
+                    }}
+                    placeholder="Min"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none"
+                  />
                 </div>
                 <span className="text-white/40">-</span>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">₹</span>
-                  <input type="number" placeholder="Max" className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none" />
+                  <input
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => {
+                      setPage(1);
+                      setMaxPrice(e.target.value);
+                    }}
+                    placeholder="Max"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none"
+                  />
                 </div>
               </div>
-            </div>
-
-            <div>
-               <p className="mb-3 text-sm font-medium text-white">Minimum Rating</p>
-               <div className="space-y-2">
-                 {[4, 3, 2, 1].map((rating) => (
-                   <label key={rating} className="flex items-center gap-3 cursor-pointer group">
-                     <input type="radio" name="rating" className="h-4 w-4 accent-violet-500" />
-                     <div className="flex gap-1">
-                       {Array.from({length: 5}).map((_, i) => (
-                         <Star key={i} className={`h-3 w-3 ${i < rating ? "fill-amber-400 text-amber-400" : "fill-white/10 text-white/10"}`} />
-                       ))}
-                     </div>
-                     <span className="text-xs text-white/50 group-hover:text-white/80">& Up</span>
-                   </label>
-                 ))}
-               </div>
             </div>
           </div>
         </aside>
@@ -116,7 +178,10 @@ export default function ShopPage() {
                 <input 
                   type="text" 
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setSearchQuery(e.target.value);
+                  }}
                   placeholder="Search in these results..." 
                   className="w-full rounded-xl border border-white/10 bg-black/40 py-2 pl-9 pr-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-violet-500/50 transition-colors"
                 />
@@ -124,12 +189,17 @@ export default function ShopPage() {
               
               <div className="flex items-center gap-2">
                 <span className="text-xs text-white/50 uppercase tracking-wider">Sort:</span>
-                <select className="appearance-none rounded-xl border border-white/10 bg-black/40 py-2 pl-3 pr-8 text-sm text-white outline-none focus:border-violet-500/50">
-                  <option>Best Match</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Top Rated</option>
-                  <option>Newest Arrivals</option>
+                <select
+                  className="appearance-none rounded-xl border border-white/10 bg-black/40 py-2 pl-3 pr-8 text-sm text-white outline-none focus:border-violet-500/50"
+                  value={sort}
+                  onChange={(e) => {
+                    setPage(1);
+                    setSort(e.target.value);
+                  }}
+                >
+                  <option value="-createdAt">Newest Arrivals</option>
+                  <option value="price">Price: Low to High</option>
+                  <option value="-price">Price: High to Low</option>
                 </select>
               </div>
             </div>
@@ -154,8 +224,25 @@ export default function ShopPage() {
           )}
           
           {products.length > 0 && (
-            <div className="mt-12 flex justify-center">
-               <Button variant="secondary" size="lg" className="w-full max-w-xs">Load More Components</Button>
+            <div className="mt-12 flex flex-col items-center gap-4">
+               <p className="text-sm text-white/45">
+                 Page {meta?.page ?? page} of {meta?.totalPages ?? 1}
+               </p>
+               <div className="flex gap-3">
+                 <Button
+                   variant="secondary"
+                   disabled={(meta?.page ?? page) <= 1}
+                   onClick={() => setPage((current) => Math.max(1, current - 1))}
+                 >
+                   Previous
+                 </Button>
+                 <Button
+                   disabled={(meta?.page ?? page) >= (meta?.totalPages ?? 1)}
+                   onClick={() => setPage((current) => current + 1)}
+                 >
+                   Next Page
+                 </Button>
+               </div>
             </div>
           )}
         </div>
@@ -164,15 +251,39 @@ export default function ShopPage() {
   );
 }
 
-function FilterBlock({ title, values }: { title: string; values: string[] }) {
+function DynamicFilterBlock({
+  title,
+  values,
+  selected,
+  onSelect
+}: {
+  title: string;
+  values: Array<{ id: string; label: string }>;
+  selected: string;
+  onSelect: (value: string) => void;
+}) {
   return (
     <div>
       <p className="mb-3 text-sm font-medium text-white">{title}</p>
       <div className="space-y-2.5">
+        <label className="flex items-center gap-3 cursor-pointer group">
+          <input
+            type="radio"
+            checked={selected === ""}
+            onChange={() => onSelect("")}
+            className="h-4 w-4 rounded border-white/20 bg-white/5 accent-violet-500"
+          />
+          <span className="text-sm text-white/65 group-hover:text-white transition-colors">All</span>
+        </label>
         {values.map((value) => (
-          <label key={value} className="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" className="h-4 w-4 rounded border-white/20 bg-white/5 accent-violet-500" />
-            <span className="text-sm text-white/65 group-hover:text-white transition-colors">{value}</span>
+          <label key={value.id} className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              checked={selected === value.id}
+              onChange={() => onSelect(value.id)}
+              className="h-4 w-4 rounded border-white/20 bg-white/5 accent-violet-500"
+            />
+            <span className="text-sm text-white/65 group-hover:text-white transition-colors">{value.label}</span>
           </label>
         ))}
       </div>

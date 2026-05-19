@@ -69,11 +69,17 @@ export function ProductCard({ product }: { product: any }) {
 
           {/* 3. Trust / Rating */}
           <div className="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
-            <div className="flex items-center gap-0.5 text-amber-400">
-              <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-current" />
-              <span className="text-[10px] sm:text-xs font-medium text-white">{product.rating || "5.0"}</span>
-            </div>
-            <span className="text-[9px] sm:text-xs text-white/40">({product.reviewCount || 0})</span>
+            {typeof product.rating === "number" ? (
+              <>
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-current" />
+                  <span className="text-[10px] sm:text-xs font-medium text-white">{product.rating.toFixed(1)}</span>
+                </div>
+                <span className="text-[9px] sm:text-xs text-white/40">({product.reviewCount || 0})</span>
+              </>
+            ) : (
+              <span className="text-[10px] sm:text-xs text-white/45">No reviews yet</span>
+            )}
             <div className="ml-auto hidden sm:flex items-center gap-1 text-[10px] font-medium text-emerald-400">
               <ShieldCheck className="h-3 w-3" />
               <span>Verified</span>

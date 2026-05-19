@@ -1,6 +1,7 @@
 import { type Request, type Response } from "express";
 import { z } from "zod";
 
+import { env } from "../config/env";
 import { UserModel } from "../models/User";
 import { success, failure } from "../utils/api-response";
 import { signToken } from "../utils/jwt";
@@ -29,16 +30,17 @@ export async function login(req: Request, res: Response) {
   let user = await UserModel.findOne({ email: input.email });
   
   // Dynamic administrative bootstrapping for unseeded environments
-  if (!user && input.email === "admin@zelectronics.dev") {
+  if (!user && input.email === env.ADMIN_BOOTSTRAP_EMAIL) {
     user = await UserModel.create({
       name: "Z Admin",
-      email: "admin@zelectronics.dev",
-      password: "SecurePassword123!",
+      email: env.ADMIN_BOOTSTRAP_EMAIL,
+      password: env.ADMIN_BOOTSTRAP_PASSWORD,
       role: "admin"
     });
   }
 
   if (!user) return res.status(404).json(failure("User not found"));
+  if (!user.isActive) return res.status(403).json(failure("User account is inactive"));
 
   const isValid = await user.comparePassword(input.password);
   if (!isValid) return res.status(401).json(failure("Invalid credentials"));
@@ -57,7 +59,7 @@ export async function getMe(req: Request, res: Response) {
   const user = req.user;
   if (!user) return res.status(401).json(failure("Not authenticated"));
   
-  const fullUser = await UserModel.findById(user._id).select("-password");
+  const fullUser = await UserModel.findById(user.userId || user._id).select("-password");
   if (!fullUser) return res.status(404).json(failure("User not found"));
   
   return res.json(success(fullUser));

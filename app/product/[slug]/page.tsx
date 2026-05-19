@@ -93,11 +93,17 @@ export default function ProductDetailPage() {
             
             {/* 3. Ratings */}
             <div className="mt-4 flex items-center gap-4">
-              <div className="flex items-center gap-1 text-amber-400">
-                <Star className="h-4 w-4 fill-current" />
-                <span className="font-semibold text-white">{product.rating || "5.0"}</span>
-              </div>
-              <span className="text-sm text-white/50 underline cursor-pointer hover:text-white transition-colors">Read {product.reviewCount || 0} reviews</span>
+              {typeof product.rating === "number" ? (
+                <>
+                  <div className="flex items-center gap-1 text-amber-400">
+                    <Star className="h-4 w-4 fill-current" />
+                    <span className="font-semibold text-white">{product.rating.toFixed(1)}</span>
+                  </div>
+                  <span className="text-sm text-white/50 underline cursor-pointer hover:text-white transition-colors">Read {product.reviewCount || 0} reviews</span>
+                </>
+              ) : (
+                <span className="text-sm text-white/50">No reviews yet</span>
+              )}
               <div className="flex items-center gap-1 text-xs font-medium text-emerald-400 border-l border-white/10 pl-4">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>Verified Authentic</span>

@@ -35,7 +35,7 @@ export default function AdminMarketingPage() {
   const createMutation = useMutation({
     mutationFn: () => adminService.createCoupon({
       ...form,
-      value: Number(form.value),
+      value: Number(form.value || 0),
       minimumOrderValue: Number(form.minimumOrderValue || 0),
       expiry: form.expiry ? new Date(form.expiry) : undefined
     }),
@@ -87,7 +87,13 @@ export default function AdminMarketingPage() {
                 <label className="text-xs text-white/50 mb-1.5 block uppercase tracking-wider">
                   Value {form.discountType === "percentage" ? "(%)" : form.discountType === "fixed" ? "(₹)" : ""}
                 </label>
-                <Input type="number" placeholder="15" value={form.value} onChange={(e) => setForm(p => ({...p, value: e.target.value}))} />
+                <Input
+                  type="number"
+                  placeholder={form.discountType === "free_shipping" ? "0" : "15"}
+                  value={form.value}
+                  onChange={(e) => setForm(p => ({...p, value: e.target.value}))}
+                  disabled={form.discountType === "free_shipping"}
+                />
               </div>
               <div>
                 <label className="text-xs text-white/50 mb-1.5 block uppercase tracking-wider">Min Order Value (₹)</label>
@@ -99,7 +105,15 @@ export default function AdminMarketingPage() {
               </div>
             </div>
             <div className="mt-4 flex gap-3">
-              <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending || !form.code || !form.title || !form.value}>
+              <Button
+                onClick={() => createMutation.mutate()}
+                disabled={
+                  createMutation.isPending ||
+                  !form.code ||
+                  !form.title ||
+                  (form.discountType !== "free_shipping" && !form.value)
+                }
+              >
                 {createMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Create Coupon
               </Button>

@@ -43,5 +43,10 @@ export const orderService = {
   getOrder: async (id: string) => {
     const response = await apiClient.get(`/orders/${id}`);
     return response.data;
+  },
+
+  trackOrder: async (trackingId: string) => {
+    const response = await apiClient.get(`/orders/track/${trackingId}`);
+    return response.data;
   }
 };

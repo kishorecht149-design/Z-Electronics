@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lock, ShieldAlert, KeyRound, Loader2, ArrowRight } from "lucide-react";
+import { Lock, ShieldAlert, KeyRound, Loader2 } from "lucide-react";
 
 import { GlassCard } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,73 +10,44 @@ import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/auth-store";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [userId, setUserId] = useState("");
+  const { user, isAuthenticated, isLoading, login } = useAuthStore();
+  const [email, setEmail] = useState("admin@zelectronics.dev");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const auth = sessionStorage.getItem("z_admin_authorized");
-      if (auth === "true") {
-        const currentUser = useAuthStore.getState().user;
-        if (!currentUser || currentUser.role !== "admin") {
-          try {
-            const res = await authService.login({
-              email: "admin@zelectronics.dev",
-              password: "SecurePassword123!"
-            });
-            useAuthStore.getState().login(res.user, res.token);
-            setIsAuthorized(true);
-          } catch (err) {
-            console.error("Backend admin auto-login failed", err);
-            sessionStorage.removeItem("z_admin_authorized");
-            setIsAuthorized(false);
-          }
-        } else {
-          setIsAuthorized(true);
-        }
-      } else {
-        setIsAuthorized(false);
-      }
-    };
-    
-    checkAuth();
-  }, []);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
+    setSubmitting(true);
 
     try {
-      if (userId === "admin" && password === "SecureAdminPass2026!") {
-        // Authenticate with backend API using the actual seeded admin credentials
-        const res = await authService.login({
-          email: "admin@zelectronics.dev",
-          password: "SecurePassword123!"
-        });
-        
-        // Save standard auth in store and localStorage so API routes have the correct token!
-        useAuthStore.getState().login(res.user, res.token);
-        
-        sessionStorage.setItem("z_admin_authorized", "true");
-        setIsAuthorized(true);
-      } else {
-        setError("Invalid Admin User ID or Password");
+      const normalizedEmail = email.trim().toLowerCase() === "admin" ? "admin@zelectronics.dev" : email.trim();
+      const res = await authService.login({
+        email: normalizedEmail,
+        password
+      });
+
+      if (res.data.user.role !== "admin" && res.data.user.role !== "staff") {
+        setError("This account does not have admin access.");
+        return;
       }
+
+      login(res.data.user, res.data.token);
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message || 
-        "Database authentication failed. Please ensure the admin seed exists."
-      );
+      setError(err?.response?.data?.message || "Database authentication failed.");
     } finally {
-      setIsLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (isAuthorized === null) {
+  useEffect(() => {
+    if (isAuthenticated && (user?.role === "admin" || user?.role === "staff")) {
+      setError("");
+    }
+  }, [isAuthenticated, user]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-ink flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-violet-400" />
@@ -84,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!isAuthorized) {
+  if (!isAuthenticated || (user?.role !== "admin" && user?.role !== "staff")) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center px-4 relative overflow-hidden bg-ink py-16">
         <div className="absolute -right-20 top-10 h-[400px] w-[400px] rounded-full bg-violet-600/10 blur-[100px]" />
@@ -102,12 +73,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <GlassCard className="p-8 border-white/10 bg-white/[0.02]">
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Admin User ID</label>
+                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Admin Email</label>
                 <Input
-                  type="text"
-                  placeholder="Enter admin ID"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  type="email"
+                  placeholder="admin@zelectronics.dev"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -130,8 +101,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
               )}
 
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                {isLoading ? (
+              <Button type="submit" className="w-full h-11" disabled={submitting}>
+                {submitting ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
                   <KeyRound className="h-4 w-4 mr-2" />
@@ -143,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="mt-6 border-t border-white/5 pt-4 text-center">
               <p className="text-[11px] text-white/30">
                 Workspace Credentials Hint: <br />
-                <span className="font-mono text-white/50">admin</span> / <span className="font-mono text-white/50">SecureAdminPass2026!</span>
+                <span className="font-mono text-white/50">admin@zelectronics.dev</span> / <span className="font-mono text-white/50">SecurePassword123!</span>
               </p>
             </div>
           </GlassCard>

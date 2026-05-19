@@ -7,10 +7,12 @@ import { ArrowRight, BadgeCheck, Clock, GraduationCap, ShieldCheck, Sparkles, Za
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
+import { AnimatedBackground } from "@/components/ui/animated-background";
 
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden px-4 pb-20 pt-16 md:px-6 md:pb-28 md:pt-24">
+      <AnimatedBackground />
       <div className="absolute inset-0 bg-hero-grid bg-[size:80px_80px] opacity-20" />
       <div className="absolute -right-20 top-10 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
       <div className="absolute left-0 top-40 h-[400px] w-[400px] rounded-full bg-pink/15 blur-[140px]" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, UploadCloud, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,14 +25,30 @@ export default function NewProductPage() {
     compareAtPrice: "",
     stock: "",
     status: "draft",
+    shortDescription: "",
     description: "",
     category: "",
     brand: "",
+    datasheetUrl: "",
+    tags: "",
     images: [] as string[]
   });
 
   const [isUploading, setIsUploading] = useState(false);
   const [cloudinaryUrl, setCloudinaryUrl] = useState("");
+
+  const { data: categoriesRes } = useQuery({
+    queryKey: ["admin-categories"],
+    queryFn: () => adminService.getCategories()
+  });
+
+  const { data: brandsRes } = useQuery({
+    queryKey: ["admin-brands"],
+    queryFn: () => adminService.getBrands()
+  });
+
+  const categories = categoriesRes?.data ?? [];
+  const brands = brandsRes?.data ?? [];
 
   const createMutation = useMutation({
     mutationFn: (data: any) => adminService.createProduct(data),
@@ -67,8 +83,8 @@ export default function NewProductPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || formData.images.length === 0) {
-      toast.error("Please fill required fields and upload an image");
+    if (!formData.name || !formData.price || !formData.shortDescription || !formData.description || !formData.category || !formData.brand || formData.images.length === 0) {
+      toast.error("Please fill all required fields and upload at least one image");
       return;
     }
 
@@ -76,7 +92,12 @@ export default function NewProductPage() {
       ...formData,
       price: Number(formData.price),
       compareAtPrice: formData.compareAtPrice ? Number(formData.compareAtPrice) : undefined,
-      stock: Number(formData.stock || 0)
+      stock: Number(formData.stock || 0),
+      datasheetUrl: formData.datasheetUrl || undefined,
+      tags: formData.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
     });
   };
 
@@ -105,29 +126,76 @@ export default function NewProductPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">SKU</label>
+                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">SKU *</label>
                     <Input 
                       placeholder="e.g. RPI-5-8GB" 
                       value={formData.sku}
                       onChange={(e) => setFormData(prev => ({...prev, sku: e.target.value}))}
+                      required
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Brand</label>
-                    <Input 
-                      placeholder="e.g. Raspberry Pi Foundation" 
+                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Brand *</label>
+                    <Input
+                      list="brand-options"
+                      placeholder="e.g. Raspberry Pi"
                       value={formData.brand}
                       onChange={(e) => setFormData(prev => ({...prev, brand: e.target.value}))}
                     />
+                    <datalist id="brand-options">
+                      {brands.map((brand: any) => (
+                        <option key={brand._id} value={brand.name} />
+                      ))}
+                    </datalist>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Description</label>
+                  <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Short Description *</label>
+                  <Input
+                    placeholder="One-line summary for product cards and search"
+                    value={formData.shortDescription}
+                    onChange={(e) => setFormData(prev => ({...prev, shortDescription: e.target.value}))}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Description *</label>
                   <textarea 
                     className="w-full rounded-xl border border-white/10 bg-black/40 py-3 px-4 text-sm text-white placeholder:text-white/30 outline-none focus:border-violet-500/50 transition-colors h-32 resize-y"
                     placeholder="Detailed product description..."
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({...prev, description: e.target.value}))}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Category *</label>
+                    <Input
+                      list="category-options"
+                      placeholder="e.g. Microcontrollers"
+                      value={formData.category}
+                      onChange={(e) => setFormData(prev => ({...prev, category: e.target.value}))}
+                    />
+                    <datalist id="category-options">
+                      {categories.map((category: any) => (
+                        <option key={category._id} value={category.name} />
+                      ))}
+                    </datalist>
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Datasheet URL</label>
+                    <Input
+                      placeholder="https://..."
+                      value={formData.datasheetUrl}
+                      onChange={(e) => setFormData(prev => ({...prev, datasheetUrl: e.target.value}))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Tags</label>
+                  <Input
+                    placeholder="iot, wireless, esp32"
+                    value={formData.tags}
+                    onChange={(e) => setFormData(prev => ({...prev, tags: e.target.value}))}
                   />
                 </div>
               </div>

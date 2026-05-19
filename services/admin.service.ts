@@ -45,9 +45,19 @@ export const adminService = {
     return response.data;
   },
 
+  createCategory: async (data: any) => {
+    const response = await apiClient.post("/admin/categories", data);
+    return response.data;
+  },
+
   // Brands
   getBrands: async () => {
     const response = await apiClient.get("/admin/brands");
+    return response.data;
+  },
+
+  createBrand: async (data: any) => {
+    const response = await apiClient.post("/admin/brands", data);
     return response.data;
   },
 
@@ -59,6 +69,12 @@ export const adminService = {
 
   updateOrderStatus: async (id: string, status: string) => {
     const response = await apiClient.patch(`/admin/orders/${id}/status`, { status });
+    return response.data;
+  },
+
+  // Users
+  getUsers: async (params?: Record<string, any>) => {
+    const response = await apiClient.get("/admin/users", { params });
     return response.data;
   },
 

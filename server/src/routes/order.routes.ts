@@ -27,5 +27,5 @@ orderRouter.post("/validate-coupon", validateCoupon);
 orderRouter.post("/", initiateOrder);
 orderRouter.post("/verify-payment", verifyPayment);
 orderRouter.get("/", listMyOrders);
-orderRouter.get("/:id", getOrder);
 orderRouter.get("/track/:id", trackOrder);
+orderRouter.get("/:id", getOrder);
