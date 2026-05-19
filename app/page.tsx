@@ -64,7 +64,9 @@ export default function HomePage() {
               title="Trending & New Arrivals"
               description="Genuine components, verified specifications, and real-time inventory tracking."
             />
-            <Link href="/shop"><Button variant="secondary">View All Products</Button></Link>
+            <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-white/10">
+              View All Products
+            </Link>
           </div>
           
           {isLoading ? (
@@ -189,7 +191,9 @@ export default function HomePage() {
             title="Learn & Build"
             description="Tutorials, pinout guides, and schematics to support your embedded designs."
           />
-          <Link href="/shop"><Button variant="secondary">Visit Learning Hub</Button></Link>
+          <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-white/10">
+            Visit Learning Hub
+          </Link>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[

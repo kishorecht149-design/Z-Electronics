@@ -41,7 +41,9 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
       <div className="page-shell flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <Package className="h-16 w-16 text-white/20" />
         <p className="text-white/60">Order not found</p>
-        <Link href="/dashboard"><Button variant="outline">View All Orders</Button></Link>
+        <Link href="/dashboard" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-white/10">
+          View All Orders
+        </Link>
       </div>
     );
   }
@@ -130,8 +132,12 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ id
       </GlassCard>
 
       <div className="flex gap-4 justify-center">
-        <Link href="/shop"><Button variant="outline">Continue Shopping</Button></Link>
-        <Link href="/dashboard"><Button><ChevronRight className="mr-2 h-4 w-4" /> View All Orders</Button></Link>
+        <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-white/10">
+          Continue Shopping
+        </Link>
+        <Link href="/dashboard" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          <ChevronRight className="mr-2 h-4 w-4" /> View All Orders
+        </Link>
       </div>
     </div>
   );

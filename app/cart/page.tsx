@@ -65,7 +65,9 @@ export default function CartPage() {
         </div>
         <h1 className="text-3xl font-bold text-white mb-4">Your cart is empty</h1>
         <p className="text-white/60 mb-8 max-w-md">Looks like you haven't added any components yet. Let's get building!</p>
-        <Link href="/shop"><Button size="lg">Start Shopping</Button></Link>
+        <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-8 py-4 text-base font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          Start Shopping
+        </Link>
       </div>
     );
   }

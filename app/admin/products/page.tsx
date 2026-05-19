@@ -81,8 +81,11 @@ export default function AdminProductsPage() {
       <AdminShell title="Product Management">
         <div className="mb-6 flex items-center justify-between">
           <p className="text-white/60 text-sm">Manage your catalog, stock, and pricing.</p>
-          <Link href={"/admin/products/new" as Route}>
-            <Button size="sm"><Plus className="mr-2 h-4 w-4" /> Add Product</Button>
+          <Link
+            href={"/admin/products/new" as Route}
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-3 py-1.5 text-xs font-semibold text-white shadow-glow transition duration-300 hover:brightness-110"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add Product
           </Link>
         </div>
 
@@ -199,15 +202,12 @@ export default function AdminProductsPage() {
                         </td>
                         <td className="py-4">
                           <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
+                            <Link
+                              href={`/admin/products/${product._id}` as Route}
+                              className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-transparent px-3 py-1.5 text-xs font-semibold text-white transition duration-300 hover:bg-white/10"
                             >
-                              <Link href={`/admin/products/${product._id}` as Route} className="inline-flex items-center">
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
-                              </Link>
-                            </Button>
+                              <Pencil className="mr-2 h-4 w-4" /> Edit
+                            </Link>
                             <Button
                               size="sm"
                               variant="outline"

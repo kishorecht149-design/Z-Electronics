@@ -183,7 +183,9 @@ export default function CheckoutPage() {
         <ShoppingBag className="h-16 w-16 text-white/20 mb-6" />
         <h1 className="text-2xl font-bold text-white mb-2">Sign in to checkout</h1>
         <p className="text-white/60 mb-8">You need to be signed in to place an order.</p>
-        <Link href="/login"><Button>Sign In</Button></Link>
+        <Link href="/login" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          Sign In
+        </Link>
       </div>
     );
   }
@@ -194,7 +196,9 @@ export default function CheckoutPage() {
         <ShoppingBag className="h-16 w-16 text-white/20 mb-6" />
         <h1 className="text-2xl font-bold text-white mb-2">Your cart is empty</h1>
         <p className="text-white/60 mb-8">Add some products before checking out.</p>
-        <Link href="/shop"><Button>Browse Shop</Button></Link>
+        <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          Browse Shop
+        </Link>
       </div>
     );
   }

@@ -29,7 +29,9 @@ export default function TrackingPage() {
     return (
       <div className="page-shell flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <p className="text-white/60">Please sign in to track your order.</p>
-        <Link href="/login"><Button>Sign In</Button></Link>
+        <Link href="/login" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          Sign In
+        </Link>
       </div>
     );
   }
@@ -131,8 +133,12 @@ export default function TrackingPage() {
       )}
 
       <div className="flex justify-center gap-4">
-        <Link href="/dashboard"><Button variant="outline">My Orders</Button></Link>
-        <Link href="/shop"><Button>Continue Shopping</Button></Link>
+        <Link href="/dashboard" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-white/10">
+          My Orders
+        </Link>
+        <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-5 py-3 text-sm font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+          Continue Shopping
+        </Link>
       </div>
     </div>
   );
