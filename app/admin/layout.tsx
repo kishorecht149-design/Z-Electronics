@@ -6,6 +6,8 @@ import { Lock, ShieldAlert, KeyRound, Loader2, ArrowRight } from "lucide-react";
 import { GlassCard } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -15,31 +17,63 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check session authorization on load
-    const auth = sessionStorage.getItem("z_admin_authorized");
-    if (auth === "true") {
-      setIsAuthorized(true);
-    } else {
-      setIsAuthorized(false);
-    }
+    const checkAuth = async () => {
+      const auth = sessionStorage.getItem("z_admin_authorized");
+      if (auth === "true") {
+        const currentUser = useAuthStore.getState().user;
+        if (!currentUser || currentUser.role !== "admin") {
+          try {
+            const res = await authService.login({
+              email: "admin@zelectronics.dev",
+              password: "SecurePassword123!"
+            });
+            useAuthStore.getState().login(res.user, res.token);
+            setIsAuthorized(true);
+          } catch (err) {
+            console.error("Backend admin auto-login failed", err);
+            sessionStorage.removeItem("z_admin_authorized");
+            setIsAuthorized(false);
+          }
+        } else {
+          setIsAuthorized(true);
+        }
+      } else {
+        setIsAuthorized(false);
+      }
+    };
+    
+    checkAuth();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // Simulated quick check for premium experience
-    setTimeout(() => {
-      // Secure Admin Credentials
+    try {
       if (userId === "admin" && password === "SecureAdminPass2026!") {
+        // Authenticate with backend API using the actual seeded admin credentials
+        const res = await authService.login({
+          email: "admin@zelectronics.dev",
+          password: "SecurePassword123!"
+        });
+        
+        // Save standard auth in store and localStorage so API routes have the correct token!
+        useAuthStore.getState().login(res.user, res.token);
+        
         sessionStorage.setItem("z_admin_authorized", "true");
         setIsAuthorized(true);
       } else {
         setError("Invalid Admin User ID or Password");
       }
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || 
+        "Database authentication failed. Please ensure the admin seed exists."
+      );
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   if (isAuthorized === null) {
