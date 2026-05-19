@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="space-y-4">
           <div>
             <h3 className="text-xl font-semibold text-white">Z Electronics</h3>
-            <p className="text-sm text-white/55">Powered by Young Minds</p>
+            <p className="text-sm text-white/55">Premium Component Procurement</p>
           </div>
           <p className="max-w-sm text-sm leading-7 text-white/60">
             A premium marketplace for builders, engineers, students, and startups sourcing trusted electronics components with startup-speed fulfillment.

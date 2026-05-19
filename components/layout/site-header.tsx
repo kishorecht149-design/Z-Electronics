@@ -42,7 +42,7 @@ export function SiteHeader() {
             </div>
             <div>
               <p className="text-base font-semibold text-white">Z Electronics</p>
-              <p className="text-xs text-white/50">Powered by Young Minds</p>
+              <p className="text-xs text-white/50">Premium Component Marketplace</p>
             </div>
           </Link>
 

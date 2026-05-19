@@ -230,8 +230,8 @@ export const testimonials: Testimonial[] = [
 
 export const coupons: Coupon[] = [
   {
-    code: "YM10",
-    title: "Young Minds Launch Offer",
+    code: "MAKER10",
+    title: "Z Launch Offer",
     discountType: "percentage",
     value: 10,
     minimumOrderValue: 999

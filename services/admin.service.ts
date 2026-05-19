@@ -60,5 +60,16 @@ export const adminService = {
   updateOrderStatus: async (id: string, status: string) => {
     const response = await apiClient.patch(`/admin/orders/${id}/status`, { status });
     return response.data;
+  },
+
+  // Coupons
+  getCoupons: async () => {
+    const response = await apiClient.get("/admin/coupons");
+    return response.data;
+  },
+
+  createCoupon: async (data: any) => {
+    const response = await apiClient.post("/admin/coupons", data);
+    return response.data;
   }
 };

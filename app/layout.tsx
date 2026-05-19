@@ -10,7 +10,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zelectronics.example"),
-  title: "Z Electronics | Powered by Young Minds",
+  title: "Z Electronics | Premium Component Procurement",
   description: "Premium electronics components marketplace for engineers, makers and innovators.",
   openGraph: {
     title: "Z Electronics",

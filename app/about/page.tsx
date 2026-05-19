@@ -12,7 +12,7 @@ export default function AboutPage() {
         </GlassCard>
         <GlassCard>
           <p className="text-lg leading-8 text-white/70">
-            Powered by Young Minds, the platform blends startup-grade UI, procurement-friendly product data and a scalable admin backbone.
+            Built with state-of-the-art engineering, the platform blends startup-grade UI, procurement-friendly product data and a scalable admin backbone.
           </p>
         </GlassCard>
       </div>
