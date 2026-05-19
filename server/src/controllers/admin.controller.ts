@@ -6,7 +6,8 @@ import { CouponModel } from "../models/Coupon";
 import { OrderModel } from "../models/Order";
 import { ProductModel } from "../models/Product";
 import { UserModel } from "../models/User";
-import { success } from "../utils/api-response";
+import { ParsedQueryRequest } from "../middlewares/query-parser";
+import { success, failure } from "../utils/api-response";
 
 export async function getAdminDashboard(_req: Request, res: Response) {
   const [users, products, orders, coupons] = await Promise.all([
@@ -35,23 +36,51 @@ export async function createBrand(req: Request, res: Response) {
   return res.status(201).json(success(brand, "Brand created"));
 }
 
-export async function listAdminProducts(_req: Request, res: Response) {
-  const products = await ProductModel.find().populate("category brand").sort({ createdAt: -1 });
-  return res.json(success(products));
+export async function listAdminProducts(req: ParsedQueryRequest, res: Response) {
+  const { filter, sort, skip, limit, page } = req.parsedQuery || { filter: {}, sort: { createdAt: -1 }, skip: 0, limit: 10, page: 1 };
+  
+  const [products, total] = await Promise.all([
+    ProductModel.find(filter).populate("category brand").sort(sort).skip(skip).limit(limit),
+    ProductModel.countDocuments(filter)
+  ]);
+  
+  return res.json({
+    success: true,
+    data: products,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  });
 }
 
 export async function createProduct(req: Request, res: Response) {
+  // Simple auto-generation of slug if not provided
+  if (!req.body.slug && req.body.name) {
+    req.body.slug = req.body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+  }
+  
   const product = await ProductModel.create(req.body);
   return res.status(201).json(success(product, "Product created"));
 }
 
 export async function updateProduct(req: Request, res: Response) {
-  const product = await ProductModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const product = await ProductModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+  if (!product) return res.status(404).json(failure("Product not found"));
   return res.json(success(product, "Product updated"));
 }
 
-export async function listCategories(_req: Request, res: Response) {
-  const categories = await CategoryModel.find().sort({ createdAt: -1 });
+export async function deleteProduct(req: Request, res: Response) {
+  const product = await ProductModel.findByIdAndDelete(req.params.id);
+  if (!product) return res.status(404).json(failure("Product not found"));
+  return res.json(success(null, "Product deleted"));
+}
+
+export async function listCategories(req: ParsedQueryRequest, res: Response) {
+  const { filter, sort } = req.parsedQuery || { filter: {}, sort: { createdAt: -1 } };
+  const categories = await CategoryModel.find(filter).sort(sort);
   return res.json(success(categories));
 }
 
@@ -60,8 +89,9 @@ export async function createCategory(req: Request, res: Response) {
   return res.status(201).json(success(category, "Category created"));
 }
 
-export async function listCoupons(_req: Request, res: Response) {
-  const coupons = await CouponModel.find().sort({ createdAt: -1 });
+export async function listCoupons(req: ParsedQueryRequest, res: Response) {
+  const { filter, sort } = req.parsedQuery || { filter: {}, sort: { createdAt: -1 } };
+  const coupons = await CouponModel.find(filter).sort(sort);
   return res.json(success(coupons));
 }
 

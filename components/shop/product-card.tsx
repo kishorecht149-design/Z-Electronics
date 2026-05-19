@@ -6,16 +6,22 @@ import Link from "next/link";
 import { Heart, ShoppingCart, Star, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
-import type { Product } from "@/models/domain";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
 import { formatCurrency, percentOff } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: { product: any }) {
   const addItem = useCartStore((state) => state.addItem);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
-  const isWishlisted = useCartStore((state) => state.wishlist.includes(product.id));
+  const productId = product._id || product.id;
+  const isWishlisted = useCartStore((state) => state.wishlist.includes(productId));
+
+  const imageUrl = product.images?.[0] || "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop";
+  const brandName = typeof product.brand === "object" ? product.brand?.name : product.brand;
+  
+  // Dynamic stock state handling based on real stock value
+  const stockState = product.stock > 10 ? "in-stock" : product.stock > 0 ? "low-stock" : "out-of-stock";
 
   return (
     <GlassCard className="group flex flex-col overflow-hidden p-0 h-full transition-all hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgba(139,92,246,0.1)]">
@@ -32,7 +38,7 @@ export function ProductCard({ product }: { product: Product }) {
           aria-label="Toggle wishlist"
           onClick={(e) => {
             e.preventDefault();
-            toggleWishlist(product.id);
+            toggleWishlist(productId);
           }}
           className="absolute right-3 top-3 z-10 rounded-full bg-black/40 p-2 text-white/75 backdrop-blur-md transition-colors hover:bg-black/60 hover:text-white"
         >
@@ -40,7 +46,7 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
         <Link href={`/product/${product.slug}` as Route} className="block relative aspect-[4/3] w-full overflow-hidden">
           <Image
-            src={product.images[0]}
+            src={imageUrl}
             alt={product.name}
             fill
             className="object-cover p-6 transition-transform duration-500 group-hover:scale-110"
@@ -52,8 +58,8 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex-1">
           {/* Brand/SKU */}
           <div className="mb-2 flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-white/40">
-            <span>{product.brand}</span>
-            <span>{product.sku}</span>
+            <span>{brandName || "Generic"}</span>
+            <span>{product.sku || "N/A"}</span>
           </div>
 
           {/* 2. Product Name */}
@@ -65,9 +71,9 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="mt-3 flex items-center gap-2">
             <div className="flex items-center gap-1 text-amber-400">
               <Star className="h-3.5 w-3.5 fill-current" />
-              <span className="text-xs font-medium text-white">{product.rating}</span>
+              <span className="text-xs font-medium text-white">{product.rating || "5.0"}</span>
             </div>
-            <span className="text-xs text-white/40">({product.reviewCount} reviews)</span>
+            <span className="text-xs text-white/40">({product.reviewCount || 0} reviews)</span>
             <div className="ml-auto flex items-center gap-1 text-[10px] font-medium text-emerald-400">
               <ShieldCheck className="h-3 w-3" />
               <span>Verified</span>
@@ -86,8 +92,8 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
             {/* 5. Stock */}
             <div className="text-right">
-              <span className="inline-block rounded-full bg-white/5 border border-white/10 px-2 py-1 text-[10px] font-medium text-white/70">
-                {product.stockState.replace(/-/g, " ")}
+              <span className={`inline-block rounded-full bg-white/5 border border-white/10 px-2 py-1 text-[10px] font-medium text-white/70 ${stockState === "in-stock" ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/10" : stockState === "low-stock" ? "text-amber-400 border-amber-400/20 bg-amber-400/10" : "text-pink border-pink/20 bg-pink/10"}`}>
+                {stockState.replace(/-/g, " ")}
               </span>
             </div>
           </div>
@@ -95,12 +101,15 @@ export function ProductCard({ product }: { product: Product }) {
           {/* 6. CTA */}
           <Button
             className="w-full shadow-lg transition-all hover:shadow-violet-500/25"
+            disabled={product.stock <= 0}
             onClick={() => {
-              addItem(product.id);
-              toast.success(`${product.name} added to cart`);
+              if (product.stock > 0) {
+                addItem(productId);
+                toast.success(`${product.name} added to cart`);
+              }
             }}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+            <ShoppingCart className="mr-2 h-4 w-4" /> {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
           </Button>
         </div>
       </div>

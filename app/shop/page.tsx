@@ -1,13 +1,24 @@
-import { ChevronRight, Filter, Search, SlidersHorizontal, Star } from "lucide-react";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { ChevronRight, Filter, Search, SlidersHorizontal, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
-import { GlassCard } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { products } from "@/lib/mock-data";
+import { productsService } from "@/services/products.service";
 
 export default function ShopPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["products", { q: searchQuery }],
+    queryFn: () => productsService.getProducts({ q: searchQuery })
+  });
+
+  const products = response?.data || [];
+
   return (
     <div className="page-shell py-8">
       {/* Breadcrumbs & Header */}
@@ -95,7 +106,7 @@ export default function ShopPage() {
                 <Filter className="h-4 w-4" /> Filters
               </button>
               <p className="text-sm font-medium text-white">
-                <span className="text-violet-300">382</span> Results
+                <span className="text-violet-300">{isLoading ? "-" : products.length}</span> Results
               </p>
             </div>
             
@@ -104,6 +115,8 @@ export default function ShopPage() {
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                 <input 
                   type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search in these results..." 
                   className="w-full rounded-xl border border-white/10 bg-black/40 py-2 pl-9 pr-4 text-sm text-white placeholder:text-white/40 outline-none focus:border-violet-500/50 transition-colors"
                 />
@@ -123,15 +136,28 @@ export default function ShopPage() {
           </div>
 
           {/* PRODUCT GRID */}
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {isLoading ? (
+             <div className="flex justify-center items-center py-32">
+                <Loader2 className="h-10 w-10 text-violet-500 animate-spin" />
+             </div>
+          ) : products.length === 0 ? (
+             <div className="flex flex-col justify-center items-center py-32 text-white/50">
+                <Search className="h-12 w-12 mb-4 opacity-20" />
+                <p>No products found matching your criteria.</p>
+             </div>
+          ) : (
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+              {products.map((product: any) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
           
-          <div className="mt-12 flex justify-center">
-             <Button variant="secondary" size="lg" className="w-full max-w-xs">Load More Components</Button>
-          </div>
+          {products.length > 0 && (
+            <div className="mt-12 flex justify-center">
+               <Button variant="secondary" size="lg" className="w-full max-w-xs">Load More Components</Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
