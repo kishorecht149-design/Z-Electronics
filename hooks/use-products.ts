@@ -1,13 +1,15 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { productsService } from "@/services/products.service";
 
-import { products } from "@/lib/mock-data";
-
-export function useProducts() {
+export function useProducts(params?: Record<string, any>) {
   return useQuery({
-    queryKey: ["products"],
-    queryFn: async () => products,
+    queryKey: ["products", params],
+    queryFn: async () => {
+      const res = await productsService.getProducts(params);
+      return res.data || [];
+    },
     staleTime: 1000 * 60 * 10
   });
 }
