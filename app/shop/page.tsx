@@ -67,12 +67,12 @@ export default function ShopPage() {
               <p className="mb-4 text-sm font-medium text-white">Price Range</p>
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">₹</span>
                   <input type="number" placeholder="Min" className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none" />
                 </div>
                 <span className="text-white/40">-</span>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xs">₹</span>
                   <input type="number" placeholder="Max" className="w-full rounded-xl border border-white/10 bg-white/5 py-2 pl-7 pr-3 text-sm text-white outline-none" />
                 </div>
               </div>

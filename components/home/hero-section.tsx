@@ -98,8 +98,8 @@ export function HeroSection() {
                 
                 <div className="mt-6 flex items-center justify-between">
                   <div>
-                     <p className="text-sm text-white/50 line-through">$85.00</p>
-                     <p className="text-2xl font-bold text-white">$79.99</p>
+                     <p className="text-sm text-white/50 line-through">₹7,999</p>
+                     <p className="text-2xl font-bold text-white">₹7,499</p>
                   </div>
                   <Button size="sm" className="bg-white text-black hover:bg-white/90">Add to Cart</Button>
                 </div>
