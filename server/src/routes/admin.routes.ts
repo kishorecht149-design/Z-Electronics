@@ -7,9 +7,11 @@ import {
   createProduct,
   deleteProduct,
   getAdminDashboard,
+  listAdminOrders,
   listAdminProducts,
   listCategories,
   listCoupons,
+  updateOrderStatus,
   updateProduct,
   uploadImageAdmin
 } from "../controllers/admin.controller";
@@ -31,3 +33,5 @@ adminRouter.get("/categories", parseQuery, listCategories);
 adminRouter.post("/categories", createCategory);
 adminRouter.get("/coupons", parseQuery, listCoupons);
 adminRouter.post("/coupons", createCoupon);
+adminRouter.get("/orders", parseQuery, listAdminOrders);
+adminRouter.patch("/orders/:id/status", updateOrderStatus);

@@ -9,5 +9,11 @@ export const productsService = {
   getProductBySlug: async (slug: string) => {
     const response = await apiClient.get(`/products/${slug}`);
     return response.data;
+  },
+
+  // Fetch by MongoDB _id (used in cart checkout display)
+  getProductById: async (id: string) => {
+    const response = await apiClient.get(`/products/id/${id}`);
+    return response.data;
   }
 };

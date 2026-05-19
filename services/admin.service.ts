@@ -2,6 +2,12 @@ import { apiClient } from "./api-client";
 
 // Admin API endpoints (requires auth token)
 export const adminService = {
+  // Dashboard
+  getDashboard: async () => {
+    const response = await apiClient.get("/admin/dashboard");
+    return response.data;
+  },
+
   // Products
   getProducts: async (params?: Record<string, any>) => {
     const response = await apiClient.get("/admin/products", { params });
@@ -42,6 +48,17 @@ export const adminService = {
   // Brands
   getBrands: async () => {
     const response = await apiClient.get("/admin/brands");
+    return response.data;
+  },
+
+  // Orders
+  getOrders: async (params?: Record<string, any>) => {
+    const response = await apiClient.get("/admin/orders", { params });
+    return response.data;
+  },
+
+  updateOrderStatus: async (id: string, status: string) => {
+    const response = await apiClient.patch(`/admin/orders/${id}/status`, { status });
     return response.data;
   }
 };
