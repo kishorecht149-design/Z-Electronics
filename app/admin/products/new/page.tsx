@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import Image from "next/image";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Button } from "@/components/ui/button";
@@ -265,7 +264,7 @@ export default function NewProductPage() {
               <div className="grid grid-cols-2 gap-4 mb-4 md:grid-cols-4">
                 {formData.images.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/40">
-                    <Image src={img} alt={`Upload ${i+1}`} fill className="object-cover" />
+                    <img src={img} alt={`Upload ${i + 1}`} className="h-full w-full object-cover" />
                     <button
                       type="button"
                       onClick={() =>

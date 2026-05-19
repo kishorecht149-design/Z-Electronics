@@ -1,11 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Download, Truck, Star, ShieldCheck, Zap, PackagePlus, FileText, HelpCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
@@ -67,13 +65,13 @@ export default function ProductDetailPage() {
         {/* 1. Product Gallery */}
         <div className="space-y-4">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.02]">
-            <Image src={imageUrls[0]} alt={product.name} fill className="object-contain p-8" />
+            <img src={imageUrls[0]} alt={product.name} className="h-full w-full object-contain p-8" />
           </div>
           {imageUrls.length > 1 && (
             <div className="grid grid-cols-4 gap-4">
               {imageUrls.map((image: string, idx: number) => (
                 <div key={idx} className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] cursor-pointer hover:border-violet-500/50 transition-colors">
-                  <Image src={image} alt={`${product.name} view ${idx + 1}`} fill className="object-contain p-2" />
+                  <img src={image} alt={`${product.name} view ${idx + 1}`} className="h-full w-full object-contain p-2" />
                 </div>
               ))}
             </div>
@@ -246,7 +244,7 @@ export default function ProductDetailPage() {
                    {related.slice(0, 2).map((item: any) => (
                       <div key={item._id} className="flex items-center gap-3 bg-black/40 p-2 rounded-lg border border-white/5">
                          <div className="relative h-10 w-10 shrink-0 bg-white/5 rounded-md overflow-hidden">
-                            <Image src={item.images?.[0] || "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800"} alt={item.name} fill className="object-contain p-1" />
+                            <img src={item.images?.[0] || "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800"} alt={item.name} className="h-full w-full object-contain p-1" />
                          </div>
                          <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-white truncate">{item.name}</p>

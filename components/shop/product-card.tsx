@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
 import { Heart, ShoppingCart, Star, ShieldCheck } from "lucide-react";
@@ -45,11 +43,10 @@ export function ProductCard({ product }: { product: any }) {
           <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isWishlisted ? "fill-pink text-pink" : ""}`} />
         </button>
         <Link href={`/product/${product.slug}` as Route} className="block relative aspect-[4/3] w-full overflow-hidden">
-          <Image
+          <img
             src={imageUrl}
             alt={product.name}
-            fill
-            className="object-cover p-3 sm:p-6 transition-transform duration-500 group-hover:scale-110"
+            className="h-full w-full object-cover p-3 sm:p-6 transition-transform duration-500 group-hover:scale-110"
           />
         </Link>
       </div>

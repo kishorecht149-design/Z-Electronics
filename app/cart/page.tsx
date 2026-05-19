@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Check, Loader2, PackageOpen, Plus, ShieldCheck, Ticket, Trash2, Truck } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -122,7 +121,7 @@ export default function CartPage() {
                   <div key={product._id} className="flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="relative h-24 w-24 shrink-0 rounded-xl bg-white/5 overflow-hidden">
                       {product.images?.[0] && (
-                        <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                        <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
                       )}
                     </div>
                     <div className="flex flex-1 flex-col justify-between py-1">
