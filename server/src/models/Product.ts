@@ -12,22 +12,35 @@ const productSchema = new Schema(
   {
     name: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
-    shortDescription: { type: String, required: true },
-    description: { type: String, required: true },
+    sku: { type: String, required: true, unique: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
-    sku: { type: String, required: true, unique: true },
     price: { type: Number, required: true },
-    compareAtPrice: { type: Number, required: true },
-    stock: { type: Number, default: 0 },
+    compareAtPrice: { type: Number },
+    stock: { type: Number, default: 0, min: 0 },
+    images: [String],
+    shortDescription: { type: String, required: true },
+    description: { type: String, required: true },
+    specifications: [specificationSchema],
+    datasheetUrl: String,
     tags: [String],
     featured: { type: Boolean, default: false },
+    trending: { type: Boolean, default: false },
     bestSeller: { type: Boolean, default: false },
-    images: [String],
-    datasheetUrl: String,
-    specifications: [specificationSchema]
+    status: { type: String, enum: ["draft", "published", "archived"], default: "draft" },
+    seoMetadata: {
+      title: String,
+      description: String,
+      keywords: [String]
+    }
   },
   { timestamps: true }
 );
+
+// Indexes for faster querying
+productSchema.index({ slug: 1 });
+productSchema.index({ sku: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ status: 1 });
 
 export const ProductModel = models.Product || model("Product", productSchema);

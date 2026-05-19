@@ -6,7 +6,7 @@ import { verifyToken } from "../utils/jwt";
 export interface AuthenticatedRequest extends Request {
   user?: {
     userId: string;
-    role: "user" | "admin";
+    role: "customer" | "staff" | "admin";
   };
 }
 
@@ -19,16 +19,21 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
   }
 
   try {
-    req.user = verifyToken(token);
+    req.user = verifyToken(token) as AuthenticatedRequest["user"];
     next();
   } catch {
     return res.status(401).json(failure("Invalid or expired token"));
   }
 }
 
-export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json(failure("Admin access required"));
-  }
-  next();
+export function requireRole(roles: ("customer" | "staff" | "admin")[]) {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json(failure("Insufficient permissions"));
+    }
+    next();
+  };
 }
+
+export const requireAdmin = requireRole(["admin"]);
+export const requireStaff = requireRole(["admin", "staff"]);
