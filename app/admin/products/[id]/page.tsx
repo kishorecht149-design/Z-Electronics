@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { adminService } from "@/services/admin.service";
+import { getApiErrorMessage } from "@/services/api-client";
 import { productsService } from "@/services/products.service";
 
 export default function EditProductPage() {
@@ -87,7 +88,7 @@ export default function EditProductPage() {
       toast.success("Product updated successfully!");
       router.push("/admin/products");
     },
-    onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to update product")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to update product"))
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,8 +103,8 @@ export default function EditProductPage() {
         images: [...prev.images, res.data.url]
       }));
       toast.success("Image uploaded!");
-    } catch {
-      toast.error("Failed to upload image");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to upload image"));
     } finally {
       setIsUploading(false);
     }

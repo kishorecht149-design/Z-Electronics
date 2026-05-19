@@ -12,6 +12,7 @@ import { GlassCard } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/utils";
 import { adminService } from "@/services/admin.service";
+import { getApiErrorMessage } from "@/services/api-client";
 
 import type { Route } from "next";
 
@@ -44,7 +45,7 @@ export default function AdminProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       toast.success("Product status updated");
     },
-    onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to update product")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to update product"))
   });
 
   const deleteMutation = useMutation({
@@ -53,7 +54,7 @@ export default function AdminProductsPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       toast.success("Product deleted");
     },
-    onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to delete product")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to delete product"))
   });
 
   const createBrandMutation = useMutation({
@@ -63,7 +64,7 @@ export default function AdminProductsPage() {
       setBrandName("");
       toast.success("Brand created");
     },
-    onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to create brand")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to create brand"))
   });
 
   const createCategoryMutation = useMutation({
@@ -73,7 +74,7 @@ export default function AdminProductsPage() {
       setCategoryName("");
       toast.success("Category created");
     },
-    onError: (error: any) => toast.error(error?.response?.data?.message || "Failed to create category")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to create category"))
   });
 
   return (

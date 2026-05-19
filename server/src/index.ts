@@ -8,10 +8,21 @@ import { errorHandler } from "./middlewares/error-handler";
 import { apiRouter } from "./routes";
 
 const app = express();
+
+function healthPayload() {
+  return {
+    success: true,
+    app: "z-electronics-api",
+    timestamp: new Date().toISOString()
+  };
+}
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 150,
-  skip: (req) => req.path === "/api/health" || req.path === "/health"
+  max: 600,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === "OPTIONS" || ["/", "/api/health", "/health"].includes(req.path)
 });
 
 app.use(
@@ -21,13 +32,8 @@ app.use(
   })
 );
 app.use(express.json({ limit: "1mb" }));
-app.get("/health", (_req, res) =>
-  res.json({
-    success: true,
-    app: "z-electronics-api",
-    timestamp: new Date().toISOString()
-  })
-);
+app.get("/", (_req, res) => res.json(healthPayload()));
+app.get("/health", (_req, res) => res.json(healthPayload()));
 app.use(apiLimiter);
 
 app.use("/api", apiRouter);

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { adminService } from "@/services/admin.service";
+import { getApiErrorMessage } from "@/services/api-client";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -45,7 +46,7 @@ export default function AdminMarketingPage() {
       setShowForm(false);
       setForm({ code: "", title: "", discountType: "percentage", value: "", minimumOrderValue: "", expiry: "" });
     },
-    onError: (e: any) => toast.error(e?.response?.data?.message || "Failed to create coupon")
+    onError: (error: any) => toast.error(getApiErrorMessage(error, "Failed to create coupon"))
   });
 
   return (

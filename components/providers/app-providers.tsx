@@ -14,7 +14,12 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             staleTime: 1000 * 60 * 5,
-            refetchOnWindowFocus: false
+            refetchOnWindowFocus: false,
+            retry: (failureCount, error: any) => {
+              const status = error?.response?.status;
+              if ([400, 401, 403, 404, 409, 422].includes(status)) return false;
+              return failureCount < 1;
+            }
           }
         }
       })

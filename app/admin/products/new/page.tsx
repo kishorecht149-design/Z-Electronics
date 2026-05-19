@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { adminService } from "@/services/admin.service";
+import { getApiErrorMessage } from "@/services/api-client";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function NewProductPage() {
       router.push("/admin/products");
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Failed to create product");
+      toast.error(getApiErrorMessage(error, "Failed to create product"));
     }
   });
 
@@ -74,7 +75,7 @@ export default function NewProductPage() {
       }));
       toast.success("Image uploaded!");
     } catch (error) {
-      toast.error("Failed to upload image");
+      toast.error(getApiErrorMessage(error, "Failed to upload image"));
     } finally {
       setIsUploading(false);
     }
