@@ -32,6 +32,7 @@ export default function NewProductPage() {
   });
 
   const [isUploading, setIsUploading] = useState(false);
+  const [cloudinaryUrl, setCloudinaryUrl] = useState("");
 
   const createMutation = useMutation({
     mutationFn: (data: any) => adminService.createProduct(data),
@@ -145,6 +146,35 @@ export default function NewProductPage() {
                   {isUploading ? <Loader2 className="h-6 w-6 text-violet-400 animate-spin" /> : <UploadCloud className="h-6 w-6 text-white/50 mb-2" />}
                   <span className="text-xs text-white/50">{isUploading ? 'Uploading...' : 'Upload Image'}</span>
                 </label>
+              </div>
+
+              <div className="border-t border-white/5 pt-4 mt-4">
+                <label className="text-xs text-white/60 mb-2 block uppercase tracking-wider">Or Paste Cloudinary / External Image URL</label>
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="https://res.cloudinary.com/..." 
+                    value={cloudinaryUrl}
+                    onChange={(e) => setCloudinaryUrl(e.target.value)}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="secondary"
+                    onClick={() => {
+                      if (cloudinaryUrl.trim()) {
+                        setFormData(prev => ({
+                          ...prev,
+                          images: [...prev.images, cloudinaryUrl.trim()]
+                        }));
+                        setCloudinaryUrl("");
+                        toast.success("Image link added!");
+                      } else {
+                        toast.error("Please enter a valid image URL");
+                      }
+                    }}
+                  >
+                    Add URL
+                  </Button>
+                </div>
               </div>
             </GlassCard>
           </div>
