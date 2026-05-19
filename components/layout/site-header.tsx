@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LogOut, Menu, MoonStar, Search, ShoppingCart, SunMedium, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { BrandLogo } from "@/components/branding/brand-logo";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,11 @@ export function SiteHeader() {
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
   const { user, isAuthenticated, logout, isLoading } = useAuthStore();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -32,10 +38,10 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="bg-violet-600 px-4 py-2 text-center text-xs font-medium text-white sm:px-6 lg:px-8">
+      <div className="border-b border-white/10 bg-black px-4 py-2 text-center text-xs font-medium text-white sm:px-6 lg:px-8">
         <p>Flash Sale: Get 15% off student starter kits with code <span className="font-bold">MAKER15</span></p>
       </div>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/75 backdrop-blur-2xl">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/95 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 md:px-6">
           <BrandLogo subtitleClassName="text-xs text-white/50" />
 
@@ -54,10 +60,10 @@ export function SiteHeader() {
             </div>
             <button
               aria-label="Toggle theme"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => mounted && setTheme(theme === "dark" ? "light" : "dark")}
               className="rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 transition hover:bg-white/10 hover:text-white"
             >
-              {theme === "dark" ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
+              {mounted ? (theme === "dark" ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />) : <MoonStar className="h-4 w-4" />}
             </button>
             
             {/* Auth section */}

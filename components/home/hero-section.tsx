@@ -33,15 +33,11 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <Link href="/shop">
-              <Button size="lg" className="h-12 px-8 text-base">
-                Shop Components <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+            <Link href="/shop" className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-violet-500 to-pink px-8 py-4 text-base font-semibold text-white shadow-glow transition duration-300 hover:brightness-110">
+              Shop Components <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link href="/categories">
-              <Button variant="secondary" size="lg" className="h-12 px-8 text-base">
-                Browse Kits
-              </Button>
+            <Link href="/categories" className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-8 py-4 text-base font-semibold text-white transition duration-300 hover:bg-white/10">
+              Browse Kits
             </Link>
           </div>
 
@@ -88,7 +84,6 @@ export function HeroSection() {
                 
                 {/* Visual Placeholder for Product */}
                 <div className="relative h-48 w-full rounded-2xl bg-gradient-to-br from-black/60 to-black/20 border border-white/5 flex items-center justify-center overflow-hidden group">
-                  <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay"></div>
                   <motion.div 
                     animate={{ rotate: [0, 5, 0, -5, 0] }} 
                     transition={{ repeat: Infinity, duration: 10, ease: "linear" }}

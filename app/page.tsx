@@ -170,7 +170,6 @@ export default function HomePage() {
               </div>
             </div>
             <div className="relative h-full min-h-[350px] rounded-3xl border border-white/10 bg-gradient-to-br from-violet-900/20 to-black overflow-hidden flex items-center justify-center p-8">
-              <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10"></div>
               <div className="text-center relative z-10 space-y-6">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink shadow-[0_0_50px_rgba(139,92,246,0.3)]">
                   <ShieldCheck className="h-10 w-10 text-white" />
