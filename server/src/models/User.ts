@@ -8,7 +8,14 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["customer", "staff", "admin"], default: "customer" },
     isActive: { type: Boolean, default: true },
-    lastLogin: { type: Date }
+    lastLogin: { type: Date },
+    cart: [
+      {
+        productId: { type: Schema.Types.ObjectId, ref: "Product" },
+        quantity: { type: Number, default: 1 }
+      }
+    ],
+    wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }]
   },
   { timestamps: true }
 );

@@ -33,5 +33,21 @@ export async function login(req: Request, res: Response) {
   if (!isValid) return res.status(401).json(failure("Invalid credentials"));
 
   const token = signToken({ userId: user.id, role: user.role });
+  
+  // Update last login
+  user.lastLogin = new Date();
+  await user.save();
+
   return res.json(success({ token, user }, "Signed in"));
+}
+
+export async function getMe(req: Request, res: Response) {
+  // @ts-ignore - Assuming auth middleware attaches user to req
+  const user = req.user;
+  if (!user) return res.status(401).json(failure("Not authenticated"));
+  
+  const fullUser = await UserModel.findById(user._id).select("-password");
+  if (!fullUser) return res.status(404).json(failure("User not found"));
+  
+  return res.json(success(fullUser));
 }

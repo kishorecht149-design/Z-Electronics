@@ -2,12 +2,13 @@
 
 import type { Route } from "next";
 import Link from "next/link";
-import { Menu, MoonStar, Search, ShoppingCart, SunMedium, User } from "lucide-react";
+import { LogOut, Menu, MoonStar, Search, ShoppingCart, SunMedium, User } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/cart-store";
+import { useAuthStore } from "@/store/auth-store";
 
 const links = [
   { href: "/categories", label: "Categories" },
@@ -20,6 +21,13 @@ const links = [
 export function SiteHeader() {
   const { theme, setTheme } = useTheme();
   const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
+  const { user, isAuthenticated, logout, isLoading } = useAuthStore();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <>
@@ -58,12 +66,34 @@ export function SiteHeader() {
             >
               {theme === "dark" ? <SunMedium className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
             </button>
-            <Link
-              href="/dashboard"
-              className="rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 transition hover:bg-white/10 hover:text-white"
-            >
-              <User className="h-4 w-4" />
-            </Link>
+            
+            {/* Auth section */}
+            {!isLoading && isAuthenticated && user ? (
+              <div className="flex items-center gap-2">
+                 <Link
+                   href={user.role === "admin" || user.role === "staff" ? "/admin" : "/dashboard"}
+                   className="rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 transition hover:bg-white/10 hover:text-white"
+                   title="Dashboard"
+                 >
+                   <User className="h-4 w-4" />
+                 </Link>
+                 <button
+                   onClick={handleLogout}
+                   className="rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 transition hover:bg-pink/10 hover:text-pink"
+                   title="Logout"
+                 >
+                   <LogOut className="h-4 w-4" />
+                 </button>
+              </div>
+            ) : !isLoading ? (
+              <Link
+                href="/login"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+              >
+                Sign In
+              </Link>
+            ) : null}
+
             <Link
               href="/cart"
               className="relative rounded-2xl border border-white/10 bg-white/5 p-3 text-white/70 transition hover:bg-white/10 hover:text-white"

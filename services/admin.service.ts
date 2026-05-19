@@ -23,6 +23,16 @@ export const adminService = {
     return response.data;
   },
 
+  // Upload
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const response = await apiClient.post("/admin/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+    return response.data;
+  },
+
   // Categories
   getCategories: async () => {
     const response = await apiClient.get("/admin/categories");

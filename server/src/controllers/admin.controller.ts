@@ -8,6 +8,20 @@ import { ProductModel } from "../models/Product";
 import { UserModel } from "../models/User";
 import { ParsedQueryRequest } from "../middlewares/query-parser";
 import { success, failure } from "../utils/api-response";
+import { uploadImage as uploadToCloudinary } from "../utils/cloudinary";
+
+export async function uploadImageAdmin(req: Request, res: Response) {
+  if (!req.file) {
+    return res.status(400).json(failure("No image provided"));
+  }
+  
+  try {
+    const url = await uploadToCloudinary(req.file.buffer);
+    return res.json(success({ url }, "Image uploaded successfully"));
+  } catch (error: any) {
+    return res.status(500).json(failure(error.message || "Upload failed"));
+  }
+}
 
 export async function getAdminDashboard(_req: Request, res: Response) {
   const [users, products, orders, coupons] = await Promise.all([

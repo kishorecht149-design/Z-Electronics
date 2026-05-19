@@ -10,15 +10,18 @@ import {
   listAdminProducts,
   listCategories,
   listCoupons,
-  updateProduct
+  updateProduct,
+  uploadImageAdmin
 } from "../controllers/admin.controller";
 import { requireAdmin, requireAuth } from "../middlewares/auth";
 import { parseQuery } from "../middlewares/query-parser";
+import { upload } from "../middlewares/upload";
 
 export const adminRouter = Router();
 
 adminRouter.use(requireAuth, requireAdmin);
 adminRouter.get("/dashboard", getAdminDashboard);
+adminRouter.post("/upload", upload.single("image"), uploadImageAdmin);
 adminRouter.post("/brands", createBrand);
 adminRouter.get("/products", parseQuery, listAdminProducts);
 adminRouter.post("/products", createProduct);

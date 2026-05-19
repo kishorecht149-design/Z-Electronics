@@ -6,3 +6,14 @@ export const apiClient = axios.create({
     "Content-Type": "application/json"
   }
 });
+
+// Request interceptor to add the auth token
+apiClient.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("z-auth-token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});

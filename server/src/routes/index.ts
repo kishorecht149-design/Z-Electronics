@@ -4,12 +4,14 @@ import { adminRouter } from "./admin.routes";
 import { authRouter } from "./auth.routes";
 import { orderRouter } from "./order.routes";
 import { productRouter } from "./product.routes";
+import { userRouter } from "./user.routes";
 
 export const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/products", productRouter);
 apiRouter.use("/orders", orderRouter);
+apiRouter.use("/users", userRouter);
 apiRouter.use("/admin", adminRouter);
 apiRouter.get("/health", (_req, res) =>
   res.json({
