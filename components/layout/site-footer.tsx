@@ -2,15 +2,18 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Instagram, Linkedin, MessageCircleMore, Twitter } from "lucide-react";
 
+import { BrandLogo } from "@/components/branding/brand-logo";
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-black/30">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-[1.3fr_1fr_1fr_1fr] md:px-6">
         <div className="space-y-4">
-          <div>
-            <h3 className="text-xl font-semibold text-white">Z Electronics</h3>
-            <p className="text-sm text-white/55">Premium Component Procurement</p>
-          </div>
+          <BrandLogo
+            titleClassName="text-xl font-semibold text-white"
+            subtitleClassName="text-sm text-white/55"
+            imageClassName="h-14 w-14 rounded-2xl object-cover"
+          />
           <p className="max-w-sm text-sm leading-7 text-white/60">
             A premium marketplace for builders, engineers, students, and startups sourcing trusted electronics components with startup-speed fulfillment.
           </p>

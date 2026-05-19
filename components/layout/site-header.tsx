@@ -6,6 +6,7 @@ import { LogOut, Menu, MoonStar, Search, ShoppingCart, SunMedium, User } from "l
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 
+import { BrandLogo } from "@/components/branding/brand-logo";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
@@ -36,15 +37,7 @@ export function SiteHeader() {
       </div>
       <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/75 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 md:px-6">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-pink shadow-glow text-lg font-bold text-white">
-              Z
-            </div>
-            <div>
-              <p className="text-base font-semibold text-white">Z Electronics</p>
-              <p className="text-xs text-white/50">Premium Component Marketplace</p>
-            </div>
-          </Link>
+          <BrandLogo subtitleClassName="text-xs text-white/50" />
 
           <nav className="hidden items-center gap-6 lg:flex">
             {links.map((link) => (

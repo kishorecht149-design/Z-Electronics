@@ -9,6 +9,7 @@ import {
   Users
 } from "lucide-react";
 
+import { BrandLogo } from "@/components/branding/brand-logo";
 import { GlassCard } from "@/components/ui/card";
 
 const nav = [
@@ -31,8 +32,13 @@ export function AdminShell({
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
       <GlassCard className="h-fit p-4">
         <div className="mb-6 border-b border-white/10 pb-5">
-          <p className="text-lg font-semibold text-white">Z Admin</p>
-          <p className="text-sm text-white/50">Secure operations workspace</p>
+          <BrandLogo
+            href="/admin"
+            titleClassName="text-lg font-semibold text-white"
+            subtitleClassName="text-sm text-white/50"
+            imageClassName="h-12 w-12 rounded-2xl object-cover"
+          />
+          <p className="mt-3 text-xs uppercase tracking-[0.3em] text-violet-300">Secure operations workspace</p>
         </div>
         <nav className="space-y-2">
           {nav.map(({ href, label, icon: Icon }) => (
